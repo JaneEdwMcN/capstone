@@ -24,6 +24,9 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
-  }
+    },
+    "facebookScheme": "fb749743162066679",
+    "facebookAppId": "749743162066679",
+    "facebookDisplayName": "Doggelganger"
+  },
 }

@@ -11,13 +11,18 @@ const clarifai = new Clarifai.App({
   apiKey: CLARIFAI_API_KEY
 });
 
-export default class App extends React.Component {
-  state = {
-    type: 'back',
-    hasCameraPermission: null,
-    imageResults: [],
-    loading: false
-  };
+export default class CameraScreen extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      type: 'back',
+      hasCameraPermission: null,
+      imageResults: [],
+      loading: false
+    };
+  }
+
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);

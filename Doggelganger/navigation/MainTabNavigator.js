@@ -1,60 +1,70 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // 6.2.2
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
-import TabBarIcon from '../components/TabBarIcon';
+
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
 import CameraScreen from '../screens/CameraScreen';
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
-});
+import PropTypes from 'prop-types';
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+class IconWithBadge extends React.Component {
+  render() {
+    const { name, color, size } = this.props;
+    return (
+      <View style={{ width: 24, height: 24, margin: 5 }}>
+      <Ionicons name={name} size={size} color={color} />
+      </View>
+    );
+  }
+}
+
+const HomeIconWithBadge = props => {
+  return <IconWithBadge {...props} />;
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
-});
+const getTabBarIcon = (navigation, focused, tintColor) => {
+  const { routeName } = navigation.state;
+  let IconComponent = Ionicons;
+  let iconName;
+  if (routeName === 'Home') {
+    iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+    // We want to add badges to home tab icon
+    IconComponent = HomeIconWithBadge;
+  } else if (routeName === 'Camera') {
+    iconName = `ios-camera`;
+  } else if (routeName === 'Links') {
+    iconName = `ios-star`;
+  }
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
-    />
-  ),
+  // You can return any component that you like here!
+  return <IconComponent name={iconName} size={25} color={tintColor} />;
 };
 
-const CameraStack = createStackNavigator({
-  Camera: CameraScreen,
-});
 
-CameraStack.navigationOptions = {
-  tabBarLabel: 'Camera',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-camera' : 'md-camera'}
-    />
-  ),
+
+export default createAppContainer(
+  createBottomTabNavigator(
+    {
+      Home: { screen: HomeScreen },
+      Camera: { screen: CameraScreen }
+    },
+    {
+      defaultNavigationOptions: ({ navigation }) => ({
+        tabBarIcon: ({ focused, tintColor }) =>
+        getTabBarIcon(navigation, focused, tintColor)
+      }),
+      tabBarOptions: {
+        activeTintColor: 'tomato',
+        inactiveTintColor: 'gray',
+      },
+    }
+  )
+);
+
+IconWithBadge.propTypes = {
+  name: PropTypes.any,
+  color: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired
 };
-
-export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  CameraStack,
-});
