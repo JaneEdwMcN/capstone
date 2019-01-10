@@ -6,6 +6,7 @@ import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 import HomeScreen from '../screens/HomeScreen';
 import CameraScreen from '../screens/CameraScreen';
+import FavoritesScreen from '../screens/FavoritesScreen';
 
 import PropTypes from 'prop-types';
 
@@ -34,7 +35,7 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
     IconComponent = HomeIconWithBadge;
   } else if (routeName === 'Camera') {
     iconName = `ios-camera`;
-  } else if (routeName === 'Links') {
+  } else if (routeName === 'Favorites') {
     iconName = `ios-star`;
   }
 
@@ -42,13 +43,12 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
   return <IconComponent name={iconName} size={25} color={tintColor} />;
 };
 
-
-
 export default createAppContainer(
   createBottomTabNavigator(
     {
       Home: { screen: HomeScreen },
-      Camera: { screen: CameraScreen }
+      Camera: { screen: CameraScreen },
+      Favorites: { screen: FavoritesScreen }
     },
     {
       defaultNavigationOptions: ({ navigation }) => ({

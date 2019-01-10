@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Text, View, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+
 import PropTypes from 'prop-types';
 import { Icon } from 'expo';
 import firebase from 'firebase';
@@ -45,7 +46,7 @@ export default class PetImageCard extends React.Component {
 
   storeFavPet = (uid, petID) => {
     firebase.database().ref('users/' + uid  + `/pets/` +  petID).update({
-      petID:  true
+      score:  this.props.info[4]
     });
   }
 

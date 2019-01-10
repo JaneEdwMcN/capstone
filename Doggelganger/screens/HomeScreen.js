@@ -73,19 +73,10 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  showPetsTest(userId) {
-    return firebase.database().ref('/users/' + userId + `/pets`).once('value').then(function(snapshot) {
-      console.log("snappy chappy v");
-      console.log(snapshot);
-    });
-  }
-
   render() {
     const { user } = this.state;
-
+    
     if (user) {
-      this.showPetsTest(user['uid'])
-
       return (
         <View style={styles.container}>
         <View style={styles.getStartedContainer}>
