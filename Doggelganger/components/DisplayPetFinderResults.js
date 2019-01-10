@@ -1,10 +1,10 @@
 import React from 'react';
-import { ScrollView, Image, Text, View, StyleSheet, Linking } from 'react-native';
+import { ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import PetImageCard from './PetImageCard';
 
 import { PETFINDER_API_KEY } from 'react-native-dotenv'
-
 
 const  capitalLetter = (str) => {
   str = str.split(" ");
@@ -18,7 +18,10 @@ export default class DisplayPetFinderResults extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { pets: [] };
+    this.state = {
+      pets: [],
+      favorite: "ios-star-outline"
+    };
   }
 
   componentDidMount() {
@@ -44,7 +47,8 @@ export default class DisplayPetFinderResults extends React.Component {
           response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"],
           response.data["petfinder"]["pets"]["pet"]["media"]["photos"]["photo"][0]["$t"],
           `https://www.petfinder.com/petdetail/${response.data['petfinder']['pets']['pet']['id']['$t']}`,
-          score
+          score,
+          response.data['petfinder']['pets']['pet']['id']['$t']
         ]
 
         const { pets } = this.state
@@ -58,46 +62,26 @@ export default class DisplayPetFinderResults extends React.Component {
     }
   }
 
-
-
-
   render() {
     const petImages = this.state.pets.map((info, index) => {
       const img = info[2]
       const newImg = img.replace("&width=60&-pnt.jpg", ".jpg")
+      return(<PetImageCard
+        key={index}
+        user={this.props.user}
+        index={index}
+        info={info}
+        newImg={newImg}/>)
+      })
 
-      return        <View key={index}>
-      <Text style={styles.titleText}>
-      {info[0]}
-      </Text>
-      <Text>
-      {info[4]}%
-      </Text>
-      <Image
-      style={{width: 300, height: 300}}
-      key={index}
-      source={{uri: newImg}} />
-      <Text
-      style={{ fontSize: 20, color: 'purple', padding: 15 }}
-      onPress={()=>Linking.openURL(info[3])}>
-      Visit {info[0]} at Pefinder.com!
-      </Text>
-      </View>
-    })
-
-    return (<ScrollView horizontal>
-      { petImages }
-      </ScrollView>)
+      return (<ScrollView horizontal>
+        { petImages }
+        </ScrollView>)
+      }
     }
-  }
 
-  const styles = StyleSheet.create({
-    titleText: {
-      fontSize: 20,
-      fontWeight: 'bold',
-    }
-  });
 
-  DisplayPetFinderResults.propTypes = {
-    predictions: PropTypes.array.isRequired
-  };
+    DisplayPetFinderResults.propTypes = {
+      predictions: PropTypes.array.isRequired,
+      user: PropTypes.object
+    };

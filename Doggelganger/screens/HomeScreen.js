@@ -36,10 +36,9 @@ export default class HomeScreen extends React.Component {
   componentDidMount() {
     auth.onAuthStateChanged(user => {
       if (user != null) {
-        this.props.navigation.setParams({ user: "user" })
+        this.writeUserData(user[`uid`], user[`displayName`], user[`email`], user[`photoURL`])
         this.setState({ logInStatus: 'We are authenticated now!', user: user });
       } else {
-        this.props.navigation.setParams({ user: null })
         this.setState({ logInStatus: 'You are currently logged out.' });
       }
     });
@@ -52,6 +51,7 @@ export default class HomeScreen extends React.Component {
     if (type === 'success') {
       //Firebase credential is created with the Facebook access token.
       const credential = firebase.auth.FacebookAuthProvider.credential(token);
+
       auth.signInAndRetrieveDataWithCredential(credential).catch(error => {
         this.setState({ errorMessage: error.message });
       });
@@ -63,15 +63,35 @@ export default class HomeScreen extends React.Component {
     return firebase.auth().signOut();
   }
 
+
+  writeUserData(userId, name, email, imageUrl) {
+    firebase.database().ref('users/' + userId).update({
+      uid: userId,
+      username: name,
+      email: email,
+      profilePicture : imageUrl
+    });
+  }
+
+  showPetsTest(userId) {
+    return firebase.database().ref('/users/' + userId + `/pets`).once('value').then(function(snapshot) {
+      console.log("snappy chappy v");
+      console.log(snapshot);
+    });
+  }
+
   render() {
     const { user } = this.state;
 
     if (user) {
+      this.showPetsTest(user['uid'])
+
       return (
         <View style={styles.container}>
         <View style={styles.getStartedContainer}>
         {this._maybeRenderDevelopmentModeWarning()}
         <Text style={styles.getStartedText}>Welcome to Doggelganger2.0!!!</Text>
+        <Text>Logged In Status: {this.state.logInStatus}</Text>
         <Button onPress={() => this.logout()} title='Logout' />
         </View>
         </View>

@@ -68,6 +68,7 @@ export default class CameraScreen extends React.Component {
   resetImageResults = () => this.setState({ imageResults:  [] });
 
   render() {
+
     const { hasCameraPermission, imageResults, loading } = this.state;
     if (hasCameraPermission === null) {
       return <View />;
@@ -75,17 +76,17 @@ export default class CameraScreen extends React.Component {
       return <Text>No access to camera</Text>;
     }  else if (imageResults.length > 0) {
       return (
-        <View>
+        <View style={{ margin: 20 }}>
         <TouchableOpacity
         onPress={this.resetImageResults}
         >
-        <Text style={{ fontSize: 30, color: 'purple', }}>X</Text>
+        <Text style={{ fontSize: 30, color: 'purple', padding: 2 }}>X</Text>
         </TouchableOpacity>
-        <DisplayPetFinderResults predictions={imageResults}/>
+        <DisplayPetFinderResults predictions={imageResults} />
         </View>
       )
     } else if (loading) {
-      return <Text style={{ fontSize: 35, color: 'purple', padding: 15 }}>Loading...</Text>;
+      return <Text style={{ fontSize: 35, color: 'purple', margin: 20}}>Loading...</Text>;
     } else if (loading === false && imageResults.length === 0) {
       return (
         <View style={{ flex: 1 }}>
