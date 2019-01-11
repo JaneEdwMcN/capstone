@@ -4,9 +4,8 @@ import { FlatList, Text, View, StyleSheet, ListItem, List, TouchableOpacity } fr
 import PropTypes from 'prop-types';
 import { Icon } from 'expo';
 import firebase from 'firebase';
-import axios from 'axios';
 
-import { PETFINDER_API_KEY } from 'react-native-dotenv'
+const auth = firebase.auth();
 
 export default class FavoritePets extends React.Component {
 
@@ -18,38 +17,40 @@ export default class FavoritePets extends React.Component {
       favoritePets: []
     };
   }
-
   componentDidMount() {
-    if (this.props.favoritePets) {
-      this.getFavoritePets(this.props.favoritePets)
-    }
+
+    auth.onAuthStateChanged(user => {
+      if (user != null) {
+        firebase.database().ref('/users/' + user['uid'] + `/pets`).on("value", (snapshot) => {
+          this.getFavoritePets(snapshot.val())
+        });
+
+      } else {
+        this.setState({ user: null });
+      }
+    });
+
   }
 
-  getFavoritePets = (petIDs) => {
-
-    for (const id in petIDs) {
-      const url = `http://api.petfinder.com/pet.get?key=${PETFINDER_API_KEY}&id=${id}&format=json`
-      axios.get(url)
-      .then((response) => {
-        const petInfo = {
-          name: response.data["petfinder"]["pet"]["name"]["$t"],
-          breed: response.data["petfinder"]["pet"]["breeds"]["breed"],
-          photo: response.data["petfinder"]["pet"]["media"]["photos"]["photo"][0]["$t"],
-          url: `https://www.petfinder.com/petdetail/${response.data['petfinder']['pet']['id']['$t']}`,
-          score: petIDs[id]["score"],
-          petID: id,
-          key: id
-        }
-
-        const { favoritePets } = this.state
-        favoritePets.push(petInfo)
-        this.setState({favoritePets: favoritePets})
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  getFavoritePets = (favPets) => {
+    const favoritePetsData = []
+    for (const data in favPets) {
+      const petInfo = {
+        name: favPets[data]["name"],
+        breed: favPets[data]["breed"],
+        photo: favPets[data]["photo"],
+        url: favPets[data]["url"],
+        score: favPets[data]["score"],
+        petID: favPets[data]["petID"],
+        key: favPets[data]["petID"]
+      }
+      
+      favoritePetsData.push(petInfo)
     }
+    this.setState({favoritePets: favoritePetsData})
+
   }
+
 
 
   saveFavorite = () => {
@@ -67,7 +68,12 @@ export default class FavoritePets extends React.Component {
 
   storeFavPet = (uid, petID) => {
     firebase.database().ref('users/' + uid  + `/pets/` +  petID).update({
-      score:  this.props.info[4]
+      score:  this.props.info[4],
+      name: this.props.info[0],
+      breed: this.props.info[1],
+      photo: this.props.newImg,
+      url: this.props.info[3],
+      petID: this.props.info[5]
     });
   }
 
@@ -81,11 +87,12 @@ export default class FavoritePets extends React.Component {
       return           <FlatList
       data={this.state.favoritePets}
       renderItem={({item}) => (
-    <View>
-      <Text>{item.name}</Text>
-      <Text>{item.score}</Text>
-    </View>
-)}
+        <View>
+        <Text>{item.name}</Text>
+        <Text>{item.score}</Text>
+        <Text>{item.url}</Text>
+        </View>
+      )}
       />
     } else {
       return         <View>

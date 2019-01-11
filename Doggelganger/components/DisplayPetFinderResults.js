@@ -42,9 +42,25 @@ export default class DisplayPetFinderResults extends React.Component {
       const url = `http://api.petfinder.com/pet.find?key=${key}&count=1&location=98122&breed=${breed}&format=json`
       axios.get(url)
       .then((response) => {
+
+        let breedData = ""
+
+        if (response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"]["$t"]) {
+          breedData = response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"]["$t"]
+        } else {
+          response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"].forEach(function(breed, index){
+            const last = response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"].length - 1
+            if (index === last) {
+              breedData += breed["$t"]
+            } else {
+              breedData += breed["$t"] + "/"
+            }
+          });
+        }
+
         const petInfo = [
           response.data["petfinder"]["pets"]["pet"]["name"]["$t"],
-          response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"],
+          breedData,
           response.data["petfinder"]["pets"]["pet"]["media"]["photos"]["photo"][0]["$t"],
           `https://www.petfinder.com/petdetail/${response.data['petfinder']['pets']['pet']['id']['$t']}`,
           score,

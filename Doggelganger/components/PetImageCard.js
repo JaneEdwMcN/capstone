@@ -46,7 +46,12 @@ export default class PetImageCard extends React.Component {
 
   storeFavPet = (uid, petID) => {
     firebase.database().ref('users/' + uid  + `/pets/` +  petID).update({
-      score:  this.props.info[4]
+      score:  this.props.info[4],
+      name: this.props.info[0],
+      breed: this.props.info[1],
+      photo: this.props.newImg,
+      url: this.props.info[3],
+      petID: this.props.info[5]
     });
   }
 
@@ -61,6 +66,7 @@ export default class PetImageCard extends React.Component {
       return        <View key={this.props.index}>
       <Text style={styles.titleText}> {this.props.info[0]} </Text>
       <Text> {this.props.info[4]}% </Text>
+      <Text> {this.props.info[1]} </Text>
       <Image
       style={{width: 300, height: 300}}
       key={this.props.index}
