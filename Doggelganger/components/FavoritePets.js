@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 
 import PropTypes from 'prop-types';
 import { Icon } from 'expo';

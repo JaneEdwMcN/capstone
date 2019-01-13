@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import PetImageCard from './PetImageCard';
+import PetMatches from './PetMatches';
 
 import { PETFINDER_API_KEY } from 'react-native-dotenv'
 
@@ -12,6 +12,14 @@ const  capitalLetter = (str) => {
     str[i] = str[i][0].toUpperCase() + str[i].substr(1);
   }
   return str.join(" ");
+}
+
+const  getScore = (scoreFloat) => {
+  const scoreNum = parseFloat(scoreFloat);
+  const scoreFloor = Math.floor(scoreNum* 100) / 100
+  let score = scoreFloor.toString()
+  score.length === 3 ? score += "0" : score
+  return score
 }
 
 export default class DisplayPetFinderResults extends React.Component {
@@ -27,45 +35,44 @@ export default class DisplayPetFinderResults extends React.Component {
   componentDidMount() {
     let i = 0;
     while (i < 10) {
-      const scoreNum = parseFloat(this.props.predictions[i]['score']);
-      const scoreFloor = Math.floor(scoreNum* 100) / 100
-      let score = scoreFloor.toString()
-      score.length === 3 ? score += "0" : score
+      const score = getScore(this.props.predictions[i]['score']);
 
       const breedImgURL = this.props.predictions[i]["input"]["data"]["image"]["url"]
       const urlRemoved = breedImgURL.split('https://d17fnq9dkz9hgj.cloudfront.net/breed-uploads/2018/08/');
       const detailJpgRemoved =  urlRemoved[1].split('-detail.jpg');
       const regex = /-/gi;
       const breedLowcase =  detailJpgRemoved[0].replace(regex, " ")
-      const breed = capitalLetter(breedLowcase);
-      const key = PETFINDER_API_KEY
-      const url = `http://api.petfinder.com/pet.find?key=${key}&count=1&location=98122&breed=${breed}&format=json`
-      axios.get(url)
+      const breedUpperCase = capitalLetter(breedLowcase);
+
+      const firstHalfURL = `http://api.petfinder.com/pet.find?key=${PETFINDER_API_KEY}`
+      const secondHalfURL = `&count=1&location=98122&breed=${breedUpperCase}&format=json`
+
+      axios.get(firstHalfURL + secondHalfURL)
       .then((response) => {
+        const breedFromData = response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"]
+        let breed = ""
 
-        let breedData = ""
-
-        if (response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"]["$t"]) {
-          breedData = response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"]["$t"]
+        if (breedFromData["$t"]) {
+          breed = breedFromData["$t"]
         } else {
-          response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"].forEach(function(breed, index){
-            const last = response.data["petfinder"]["pets"]["pet"]["breeds"]["breed"].length - 1
+          breedFromData.forEach(function(thisBreed, index){
+            const last = breedFromData.length - 1
             if (index === last) {
-              breedData += breed["$t"]
+              breed += thisBreed["$t"]
             } else {
-              breedData += breed["$t"] + "/"
+              breed += thisBreed["$t"] + "/"
             }
           });
         }
 
-        const petInfo = [
-          response.data["petfinder"]["pets"]["pet"]["name"]["$t"],
-          breedData,
-          response.data["petfinder"]["pets"]["pet"]["media"]["photos"]["photo"][0]["$t"],
-          `https://www.petfinder.com/petdetail/${response.data['petfinder']['pets']['pet']['id']['$t']}`,
-          score,
-          response.data['petfinder']['pets']['pet']['id']['$t']
-        ]
+        const petInfo = {
+          name: response.data["petfinder"]["pets"]["pet"]["name"]["$t"],
+          breed: breed,
+          photo: response.data["petfinder"]["pets"]["pet"]["media"]["photos"]["photo"][0]["$t"],
+          url: `https://www.petfinder.com/petdetail/${response.data['petfinder']['pets']['pet']['id']['$t']}`,
+          score: score,
+          petID: response.data['petfinder']['pets']['pet']['id']['$t']
+        }
 
         const { pets } = this.state
         pets.push(petInfo)
@@ -79,19 +86,18 @@ export default class DisplayPetFinderResults extends React.Component {
   }
 
   render() {
-    const petImages = this.state.pets.map((info, index) => {
-      const img = info[2]
-      const newImg = img.replace("&width=60&-pnt.jpg", ".jpg")
-      return(<PetImageCard
+    const petResults = this.state.pets.map((pet, index) => {
+      const photoWithWidth = pet["photo"]
+      const photo = photoWithWidth.replace("&width=60&-pnt.jpg", ".jpg")
+      return(<PetMatches
         key={index}
         user={this.props.user}
-        index={index}
-        info={info}
-        newImg={newImg}/>)
+        pet={pet}
+        photo={photo}/>)
       })
 
       return (<ScrollView horizontal>
-        { petImages }
+        { petResults }
         </ScrollView>)
       }
     }

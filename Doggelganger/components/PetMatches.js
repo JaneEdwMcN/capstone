@@ -7,7 +7,7 @@ import firebase from 'firebase';
 
 const auth = firebase.auth();
 
-export default class PetImageCard extends React.Component {
+export default class PetMatches extends React.Component {
 
   constructor(props) {
     super(props);
@@ -21,19 +21,16 @@ export default class PetImageCard extends React.Component {
   async componentDidMount() {
     auth.onAuthStateChanged(user => {
       if (user != null) {
-        this.setState({ loading: true, user: user });
-
+        this.setState({ user: user });
       } else {
-        console.log(null);
-        this.setState({ loading: true });
-
+        this.setState({ user: null });
       }
     });
   }
 
   saveFavorite = () => {
     const uid = this.state.user['uid']
-    const petID = this.props.info[5]
+    const petID = this.props.pet["petID"]
 
     if (this.state.favorite === 'ios-star-outline'){
       this.storeFavPet(uid, petID);
@@ -46,12 +43,12 @@ export default class PetImageCard extends React.Component {
 
   storeFavPet = (uid, petID) => {
     firebase.database().ref('users/' + uid  + `/pets/` +  petID).update({
-      score:  this.props.info[4],
-      name: this.props.info[0],
-      breed: this.props.info[1],
-      photo: this.props.newImg,
-      url: this.props.info[3],
-      petID: this.props.info[5]
+      score:  this.props.pet["score"],
+      name: this.props.pet["name"],
+      breed: this.props.pet["breed"],
+      photo: this.props.photo,
+      url: this.props.pet["url"],
+      petID: this.props.pet["petID"]
     });
   }
 
@@ -61,20 +58,18 @@ export default class PetImageCard extends React.Component {
 
   render() {
     const { user } = this.state;
-
     if (user) {
-      return        <View key={this.props.index}>
-      <Text style={styles.titleText}> {this.props.info[0]} </Text>
-      <Text> {this.props.info[4]}% </Text>
-      <Text> {this.props.info[1]} </Text>
+      return        <View>
+      <Text style={styles.titleText}> {this.props.pet["name"]} </Text>
+      <Text> {this.props.pet["score"]}% </Text>
+      <Text> {this.props.pet["breed"]} </Text>
       <Image
       style={{width: 300, height: 300}}
-      key={this.props.index}
-      source={{uri: this.props.newImg}} />
+      source={{uri: this.props.photo}} />
       <Text
       style={{ fontSize: 20, color: 'purple', padding: 15 }}
-      onPress={()=>Linking.openURL(this.props.info[3])}>
-      Visit {this.props.info[0]} at Pefinder.com!
+      onPress={()=>Linking.openURL(this.props.pet['url'])}>
+      Visit {this.props.pet['name']} at Pefinder.com!
       </Text>
       <TouchableOpacity
       onPress={this.saveFavorite}
@@ -88,17 +83,16 @@ export default class PetImageCard extends React.Component {
       </TouchableOpacity>
       </View>
     } else {
-      return        <View key={this.props.index}>
-      <Text style={styles.titleText}> {this.props.info[0]} </Text>
-      <Text> {this.props.info[4]}% </Text>
+      return        <View>
+      <Text style={styles.titleText}> {this.props.pet['name']} </Text>
+      <Text> {this.props.pet['score']}% </Text>
       <Image
       style={{width: 300, height: 300}}
-      key={this.props.index}
-      source={{uri: this.props.newImg}} />
+      source={{uri: this.props.photo}} />
       <Text
       style={{ fontSize: 20, color: 'purple', padding: 15 }}
-      onPress={()=>Linking.openURL(this.props.info[3])}>
-      Visit {this.props.info[0]} at Pefinder.com!
+      onPress={()=>Linking.openURL(this.props.pet['url'])}>
+      Visit {this.props.pet['name']} at Pefinder.com!
       </Text>
       </View>
     }
@@ -113,9 +107,8 @@ const styles = StyleSheet.create({
   }
 });
 
-PetImageCard.propTypes = {
-  index: PropTypes.number.isRequired,
+PetMatches.propTypes = {
   user: PropTypes.object,
-  info: PropTypes.array,
-  newImg: PropTypes.string
+  pet: PropTypes.object,
+  photo: PropTypes.string
 };
