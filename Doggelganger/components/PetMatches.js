@@ -1,11 +1,16 @@
 import React from 'react';
-import { Image, Text, View, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import { Font, AppLoading, Icon } from 'expo';
 
+import { Image, View, Linking, Dimensions, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
-import { Icon } from 'expo';
+import { Button, Text, StyleProvider, Card, CardItem, Left, Body, H1 } from "native-base";
+import getTheme from '../native-base-theme/components';
+import material from '../native-base-theme/variables/material';
+
 import firebase from 'firebase';
 
 const auth = firebase.auth();
+const deviceWidth = Dimensions.get("window").width;
 
 export default class PetMatches extends React.Component {
 
@@ -13,8 +18,10 @@ export default class PetMatches extends React.Component {
     super(props);
 
     this.state = {
-      favorite: "ios-star-outline",
-      user: null
+      favorite: `star-circle`,
+      favoriteText: 'Save to Favorites',
+      user: null,
+      loading: true
     };
   }
 
@@ -26,18 +33,24 @@ export default class PetMatches extends React.Component {
         this.setState({ user: null });
       }
     });
+
+    await Font.loadAsync({
+      'Roboto': require('../node_modules/native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('../node_modules/native-base/Fonts/Roboto_medium.ttf'),
+    });
+    this.setState({ loading: false });
   }
 
   saveFavorite = () => {
     const uid = this.state.user['uid']
     const petID = this.props.pet["petID"]
 
-    if (this.state.favorite === 'ios-star-outline'){
+    if (this.state.favorite === 'star-circle'){
       this.storeFavPet(uid, petID);
-      this.setState({ favorite: `ios-star` });
+      this.setState({ favorite: `star-circle-outline`, favoriteText: "Saved!" });
     } else {
       this.removeFavPet(uid, petID);
-      this.setState({ favorite: `ios-star-outline` });
+      this.setState({ favorite: `star-circle`, favoriteText: "Save to Favorites" });
     }
   }
 
@@ -56,59 +69,91 @@ export default class PetMatches extends React.Component {
     firebase.database().ref('users/' + uid  + `/pets/` +  petID).remove();
   }
 
-  render() {
-    const { user } = this.state;
+  loginOrFavoriteButton = ( user, favorite, favoriteText ) => {
     if (user) {
-      return        <View>
-      <Text style={styles.titleText}> {this.props.pet["name"]} </Text>
-      <Text> {this.props.pet["score"]}% </Text>
-      <Text> {this.props.pet["breed"]} </Text>
-      <Image
-      style={{width: 300, height: 300}}
-      source={{uri: this.props.photo}} />
-      <Text
-      style={{ fontSize: 20, color: 'purple', padding: 15 }}
-      onPress={()=>Linking.openURL(this.props.pet['url'])}>
-      Visit {this.props.pet['name']} at Pefinder.com!
-      </Text>
-      <TouchableOpacity
-      onPress={this.saveFavorite}
-      >
-      <Icon.Ionicons
-      name={this.state.favorite}
+      return         <Button
+      info
+      iconLeft
+      onPress={this.saveFavorite}>
+      <Icon.MaterialCommunityIcons
+      name={favorite}
       size={26}
-      style={{ marginBottom: -3 }}
-      color={"purple"}
+      color={ "white"}
+      style={{ marginLeft: 3 }}
       />
-      </TouchableOpacity>
-      </View>
+      <Text>{ favoriteText }</Text>
+      </Button>
     } else {
-      return        <View>
-      <Text style={styles.titleText}> {this.props.pet['name']} </Text>
-      <Text> {this.props.pet['score']}% </Text>
-      <Image
-      style={{width: 300, height: 300}}
-      source={{uri: this.props.photo}} />
-      <Text
-      style={{ fontSize: 20, color: 'purple', padding: 15 }}
-      onPress={()=>Linking.openURL(this.props.pet['url'])}>
-      Visit {this.props.pet['name']} at Pefinder.com!
-      </Text>
-      </View>
+      return   <Button
+      info
+      title="Go to Details"
+      onPress={() => this.props.navigation.navigate('Home')}
+      >
+      <Text> Login to save your favorites!</Text>
+      </Button>
     }
+  }
 
+  render() {
+    const { user, favorite, favoriteText, loading } = this.state;
+    if (loading) {
+      return   <AppLoading />
+    } else {
+      return       <StyleProvider style={getTheme(material)}>
+      <View>
+      <Card>
+      <CardItem bordered>
+      <Left>
+      <Body>
+      <H1>{this.props.pet["name"]}</H1>
+      <Text note>{this.props.pet["score"]}% match!</Text>
+      <Text note>{this.props.pet["breed"]} </Text>
+      </Body>
+      </Left>
+      </CardItem>
+
+      <CardItem>
+      <Body>
+      <Image
+      style={{
+        alignSelf: "center",
+        height: 300,
+        resizeMode: "cover",
+        width: deviceWidth / 1.18,
+        marginVertical: 5
+      }}
+      source={{uri: this.props.photo}}
+      />
+      <Button>
+      <Text
+      style={styles.petfinderProfileButton}
+      onPress={()=>Linking.openURL(this.props.pet['url'])}>
+      Visit Pefinder Profile
+      </Text>
+      </Button>
+
+      </Body>
+      </CardItem>
+      <CardItem style={{ paddingVertical: 0 }}>
+      <Left>
+      { this.loginOrFavoriteButton(user, favorite, favoriteText) }
+      </Left>
+      </CardItem>
+      </Card>
+      </View>
+      </StyleProvider>
+    }
   }
 }
-
-const styles = StyleSheet.create({
-  titleText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  }
-});
 
 PetMatches.propTypes = {
   user: PropTypes.object,
   pet: PropTypes.object,
   photo: PropTypes.string
 };
+
+const styles = StyleSheet.create({
+  petfinderProfileButton: {
+    color: '#4C55FF'
+  }
+});

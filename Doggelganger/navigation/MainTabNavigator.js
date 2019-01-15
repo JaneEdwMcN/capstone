@@ -56,8 +56,11 @@ export default createAppContainer(
         getTabBarIcon(navigation, focused, tintColor)
       }),
       tabBarOptions: {
-        activeTintColor: 'purple',
-        inactiveTintColor: 'gray',
+        activeTintColor: '#4C55FF',
+        inactiveTintColor: '#B29623',
+        style: {
+          backgroundColor: '#FFDB4C',
+        }
       },
     }
   )

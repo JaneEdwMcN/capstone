@@ -15,11 +15,18 @@ const  capitalLetter = (str) => {
 }
 
 const  getScore = (scoreFloat) => {
-  const scoreNum = parseFloat(scoreFloat);
-  const scoreFloor = Math.floor(scoreNum* 100) / 100
-  let score = scoreFloor.toString()
-  score.length === 3 ? score += "0" : score
+  let score = ""
+  if (scoreFloat[0] === "1") {
+    score = "100"
+  } else {
+    const scoreNum = parseFloat(scoreFloat);
+    const scoreFloor = Math.floor(scoreNum* 100) / 100
+    let scoreStr = scoreFloor.toString()
+    scoreStr.length === 3 ? scoreStr += "0" : scoreStr
+    score = scoreStr.replace("0.", "")
+  }
   return score
+
 }
 
 export default class DisplayPetFinderResults extends React.Component {
@@ -93,7 +100,8 @@ export default class DisplayPetFinderResults extends React.Component {
         key={index}
         user={this.props.user}
         pet={pet}
-        photo={photo}/>)
+        photo={photo}
+        navigation={this.props.navigation}/>)
       })
 
       return (<ScrollView horizontal>
@@ -105,5 +113,6 @@ export default class DisplayPetFinderResults extends React.Component {
 
     DisplayPetFinderResults.propTypes = {
       predictions: PropTypes.array.isRequired,
-      user: PropTypes.object
+      user: PropTypes.object,
+      navigation: PropTypes.object
     };
