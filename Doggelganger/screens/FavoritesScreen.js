@@ -1,7 +1,9 @@
 import React from 'react';
-import { FlatList, Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
+
+import { Content, List, ListItem, H2, Button, Body } from "native-base";
+
 import PropTypes from 'prop-types';
-import { Icon } from 'expo';
 import firebase from 'firebase';
 import FavoritePets from '../components/FavoritePets';
 
@@ -52,32 +54,60 @@ export default class FavoritesScreen extends React.Component {
   }
 
   render() {
-    const { favoritePets } = this.state;
-    if (favoritePets.length > 0) {
-      return           <FlatList
-      data={this.state.favoritePets}
-      renderItem={({item}) => (
-        <FavoritePets
-        name={item.name}
-        score={item.score}
-        url={item.url}
-        petID={item.petID}/>
-      )}
-      />
+    const { favoritePets, user } = this.state;
+    if (user) {
+      if (favoritePets.length > 0) {
+        return         <Content style={styles.contentPadding}>
+        <List>
+        <ListItem itemHeader first>
+        <H2 style={styles.headerText}>Favorites</H2>
+        </ListItem>
+        {this.state.favoritePets.map((pet, index) => (
+          <FavoritePets
+          key={index}
+          name={pet.name}
+          score={pet.score}
+          photo={pet.photo}
+          url={pet.url}
+          petID={pet.petID}/>
+        ))}
+        </List>
+        </Content>
+
+      } else {
+        return         <View>
+        <Text
+        style={{ fontSize: 20, color: 'purple', padding: 15 }}>
+        You have no favorite pets!
+        </Text>
+        </View>
+      }
     } else {
       return         <View>
-      <Text
-      style={{ fontSize: 20, color: 'purple', padding: 15 }}>
-      Hello there are NO fav pets!
-      </Text>
+      <Body>
+      <Button
+      info
+      title="Go to Login Page"
+      onPress={() => this.props.navigation.navigate('Home')}
+      >
+      <Text>Please login to see your favorite pets.</Text>
+      </Button>
+      </Body>
       </View>
     }
-
   }
 }
 
-FavoritePets.propTypes = {
-  user: PropTypes.object,
-  info: PropTypes.array,
-  newImg: PropTypes.string
+FavoritesScreen.propTypes = {
+  navigation: PropTypes.object
 };
+
+const styles = StyleSheet.create({
+  contentPadding: {
+    padding: 2,
+    marginTop: 15
+  },
+  headerText: {
+    color: "#4C55FF"
+  }
+});

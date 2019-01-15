@@ -86,7 +86,7 @@ export default class PetMatches extends React.Component {
     } else {
       return   <Button
       info
-      title="Go to Details"
+      title="Go to Login Page"
       onPress={() => this.props.navigation.navigate('Home')}
       >
       <Text> Login to save your favorites!</Text>
@@ -149,7 +149,8 @@ export default class PetMatches extends React.Component {
 PetMatches.propTypes = {
   user: PropTypes.object,
   pet: PropTypes.object,
-  photo: PropTypes.string
+  photo: PropTypes.string,
+  navigation: PropTypes.object
 };
 
 const styles = StyleSheet.create({
