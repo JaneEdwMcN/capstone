@@ -1,12 +1,14 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 
-import { Content, List, ListItem, H2, Button, Body } from "native-base";
+import { Content, List, ListItem, H2, Button, Body, StyleProvider } from "native-base";
 import { Font, AppLoading } from 'expo';
 
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import FavoritePets from '../components/FavoritePets';
+import getTheme from '../native-base-theme/components';
+import material from '../native-base-theme/variables/material';
 
 const auth = firebase.auth();
 
@@ -37,6 +39,8 @@ export default class FavoritesScreen extends React.Component {
 
     await Font.loadAsync({
       'Chicle': require('../node_modules/native-base/Fonts/Chicle-Regular.ttf'),
+      'Roboto': require('../node_modules/native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('../node_modules/native-base/Fonts/Roboto_medium.ttf')
     });
     this.setState({ loading: false });
   }
@@ -85,18 +89,20 @@ export default class FavoritesScreen extends React.Component {
           </Content>
 
         } else {
-          return         <Body style={styles.flexCenterCenter}>
+          return         <StyleProvider style={getTheme(material)}>
+          <Body style={styles.flexCenterCenter}>
           <Text style={styles.noFavorites}>
           You have no favorite pets!
           </Text>
           <Button
-          title="Go to Camera Page"
           style={styles.goToCameraButton}
+          title="Go to Camera Page"
           onPress={() => this.props.navigation.navigate('Camera')}
           >
           <Text style={styles.goToCameraText}>Start matching to find some favorites!</Text>
           </Button>
           </Body>
+          </StyleProvider>
         }
       } else {
         return         <Body style={styles.flexCenterCenter}>
@@ -143,13 +149,17 @@ const styles = StyleSheet.create({
   },
   noFavorites: {
     color: "#4C55FF",
-    fontSize: 35,
-    paddingBottom: 10
+    fontSize: 30,
+    paddingBottom: 20
   },
   goToCameraText: {
-    color: 'white'
+    color: 'white',
+    padding: 5,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   goToCameraButton: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    backgroundColor: "#4C55FF"
   }
 });

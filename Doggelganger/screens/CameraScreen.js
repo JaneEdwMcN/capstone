@@ -97,6 +97,14 @@ export default class CameraScreen extends React.Component {
     this.setState({ animal: critter });
   }
 
+  dogOrCat = (animal) => {
+    if (animal === "dog") {
+      return "Dogs"
+    } else if (animal === "cat") {
+      return "Cats"
+    }
+  }
+
   render() {
     const { hasCameraPermission, imageResults, loadingResults, loading, animal } = this.state;
     if (loading) {
@@ -186,7 +194,7 @@ export default class CameraScreen extends React.Component {
           </Button>
 
           <Button full  large info onPress={this.findPetMatch}>
-          <Text style={styles.findPetsButton}>Find Pets</Text>
+          <Text style={styles.findPetsButton}>Find Matching {this.dogOrCat(animal)}</Text>
           </Button>
           </View>
           </Camera>

@@ -25,7 +25,7 @@ export default class HomeScreen extends React.Component {
 
     this.state = {
       logInStatus: 'signed out',
-      errorMessage: 'none',
+      errorMessage: null,
       user: null,
       loading: true
     };
@@ -79,8 +79,16 @@ export default class HomeScreen extends React.Component {
     });
   }
 
+  findAdaImage = (userPhoto) => {
+    if (userPhoto === "https://graph.facebook.com/102501004190729/picture") {
+      return "https://i.imgur.com/xVKPGKl.png"
+    } else {
+      return userPhoto
+    }
+  }
+
   render() {
-    const { user, loading } = this.state;
+    const { user, loading, errorMessage } = this.state;
     if (loading) {
       return   <AppLoading />
     } else {
@@ -94,9 +102,9 @@ export default class HomeScreen extends React.Component {
           <Card>
           <CardItem bordered>
           <Left>
-          <Thumbnail square source={{uri: user["photoURL"]}} />
+          <Thumbnail square source={{uri: this.findAdaImage(user["photoURL"])}} />
           <Body>
-          <Text style={styles.welcomeText}>Welcome, {user["displayName"]}!</Text>
+          <Text style={styles.welcomeText}>Hello, {user["displayName"]}!</Text>
           </Body>
           </Left>
           </CardItem>
@@ -110,7 +118,10 @@ export default class HomeScreen extends React.Component {
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
           ! Our algorithm uses an API to detect which dog and cat breed is the most
           similar to your submitted image and returns your highest scoring matches
-          from Petfinder. Now that you are logged in, you can save your favorite pet
+          from Petfinder.
+          </Text>
+          <Text style={styles.appDescriptionLastParagraph}>
+          Now that you{"'"}re logged in, you can save your favorite pet
           matches for later!
           </Text>
           </Body>
@@ -141,8 +152,7 @@ export default class HomeScreen extends React.Component {
           >
           <Text style={styles.logoutText}>Log in with Facebook</Text>
           </Button>
-          <Text>Logged In Status: {this.state.logInStatus}</Text>
-          <Text> Log In Error Messages: {this.state.errorMessage}</Text>
+        {  errorMessage && <Text> Log In Error Messages: </Text> }
           </Body>
           </CardItem>
 
@@ -155,7 +165,10 @@ export default class HomeScreen extends React.Component {
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
           ! Our algorithm uses an API to detect which dog and cat breed is the most
           similar to your submitted image and returns your highest scoring matches
-          from Petfinder. Once you are logged in, you can save your favorite pet matches for later!
+          from Petfinder.
+          </Text>
+          <Text style={styles.appDescriptionLastParagraph}>
+          Once you{"'"}re logged in, you can save your favorite pet matches for later!
           </Text>
           </Body>
           </CardItem>
@@ -211,5 +224,9 @@ const styles = StyleSheet.create({
   },
   tm: {
     fontSize: 20
+  },
+  appDescriptionLastParagraph: {
+    paddingTop: 5,
+    color: "#4C55FF"
   }
 });
