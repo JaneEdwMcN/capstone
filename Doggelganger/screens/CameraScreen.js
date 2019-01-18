@@ -1,19 +1,26 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Button, StyleProvider, H1, Spinner } from "native-base";
+import { Button, StyleProvider, H1, Spinner, ActionSheet } from "native-base";
 import {  Font, AppLoading, Camera, Permissions, ImageManipulator } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import DisplayPetFinderResults from '../components/DisplayPetFinderResults';
-import { CLARIFAI_API_KEY } from 'react-native-dotenv'
+
+import { CLARIFAI_DOG_API_KEY, CLARIFAI_CAT_API_KEY } from 'react-native-dotenv'
 import getTheme from '../native-base-theme/components';
 import material from '../native-base-theme/variables/material';
 import PropTypes from 'prop-types';
 
 const Clarifai = require('clarifai');
 
-const clarifai = new Clarifai.App({
-  apiKey: CLARIFAI_API_KEY
+const clarifaiDog = new Clarifai.App({
+  apiKey: CLARIFAI_DOG_API_KEY
 });
+
+const clarifaiCat = new Clarifai.App({
+  apiKey: CLARIFAI_CAT_API_KEY
+});
+
+const BUTTONS = [ "dog", "cat", "Cancel" ];
 
 export default class CameraScreen extends React.Component {
 
@@ -24,7 +31,8 @@ export default class CameraScreen extends React.Component {
       hasCameraPermission: null,
       imageResults: [],
       loadingResults: false,
-      loading: true
+      loading: true,
+      animal: "dog"
     };
   }
 
@@ -61,6 +69,13 @@ export default class CameraScreen extends React.Component {
 
   findSimilarImages = async image => {
     console.log("finding similar images");
+    const { animal } = this.state;
+    let clarifai = ""
+    if (animal === "dog") {
+      clarifai = clarifaiDog
+    } else if (animal === "cat") {
+      clarifai = clarifaiCat
+    }
     let imageResults = await clarifai.inputs.search({ input: {base64: image} });
     return imageResults["hits"];
   };
@@ -78,8 +93,12 @@ export default class CameraScreen extends React.Component {
 
   resetImageResults = () => this.setState({ imageResults:  [] });
 
+  chooseAnimal = (critter) => {
+    this.setState({ animal: critter });
+  }
+
   render() {
-    const { hasCameraPermission, imageResults, loadingResults, loading } = this.state;
+    const { hasCameraPermission, imageResults, loadingResults, loading, animal } = this.state;
     if (loading) {
       return   <AppLoading />
     } else {
@@ -103,7 +122,8 @@ export default class CameraScreen extends React.Component {
 
         <DisplayPetFinderResults
         predictions={imageResults}
-        navigation={this.props.navigation} />
+        navigation={this.props.navigation}
+        animal={animal} />
         </View>
         </StyleProvider>
       } else if (loadingResults) {
@@ -117,6 +137,7 @@ export default class CameraScreen extends React.Component {
         return <StyleProvider style={getTheme(material)}>
 
         <View style={{ flex: 1 }}>
+
         <Camera
         ref={ref => {
           this.camera = ref;
@@ -144,44 +165,65 @@ export default class CameraScreen extends React.Component {
 
         <TouchableOpacity
         onPress={this.toggleFacing}
-      style={styles.flexCenterCenter}>
+        style={styles.flexCenterCenter}>
         <Ionicons name="ios-reverse-camera" size={75} color="#4C55FF" />
         </TouchableOpacity>
 
-        <Button full  large info onPress={this.findPetMatch}>
-        <Text style={styles.findPetsButton}>Find Pets</Text>
-        </Button>
-        </View>
-        </Camera>
-        </View>
-        </StyleProvider>
+        <Button full large
+        onPress={() =>
+          ActionSheet.show(
+            {
+              options: BUTTONS,
+              cancelButtonIndex: 2,
+              title: "Choose an animal to match with:"
+            },
+            buttonIndex => {
+              this.setState({ animal: BUTTONS[buttonIndex] });
+            }
+          )}
+          >
+          <Text style={styles.chooseAnimalButton}>Choose an Animal</Text>
+          </Button>
+
+          <Button full  large info onPress={this.findPetMatch}>
+          <Text style={styles.findPetsButton}>Find Pets</Text>
+          </Button>
+          </View>
+          </Camera>
+          </View>
+          </StyleProvider>
+        }
       }
     }
   }
-}
 
-CameraScreen.propTypes = {
-  navigation: PropTypes.object
-};
+  CameraScreen.propTypes = {
+    navigation: PropTypes.object
+  };
 
-const styles = StyleSheet.create({
-  findPetsButton: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white'
-  },
-  resetMatchesButton: {
-    color: 'white',
-    paddingLeft: 5,
-    paddingRight: 5
-  },
-  flexCenterCenter: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: "center"
-  },
-  loadingColor: {
-    color: '#4C55FF',
-    fontWeight: 'bold'
-  }
-});
+  const styles = StyleSheet.create({
+    findPetsButton: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: 'white'
+    },
+    chooseAnimalButton: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#4C55FF'
+    },
+    resetMatchesButton: {
+      color: 'white',
+      paddingLeft: 5,
+      paddingRight: 5
+    },
+    flexCenterCenter: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: "center"
+    },
+    loadingColor: {
+      color: '#4C55FF',
+      fontWeight: 'bold'
+    }
+  });

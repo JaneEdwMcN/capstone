@@ -1,6 +1,7 @@
 import React from 'react';
-import {  StyleSheet, Text, View, TouchableHighlight, Button} from 'react-native';
-import { Facebook } from 'expo';
+import {  StyleSheet, Text, View, Linking} from 'react-native';
+import { Thumbnail, Card, CardItem, Left, Body, Right, Button } from "native-base";
+import { Facebook, Font, AppLoading } from 'expo';
 import firebase from 'firebase';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_DATABASE_URL } from 'react-native-dotenv'
 import {  FIREBASE_PROJECT_ID, FIREBASE_MESSAGING_SENDER_ID, FACEBOOK_APP_ID } from 'react-native-dotenv'
@@ -25,7 +26,8 @@ export default class HomeScreen extends React.Component {
     this.state = {
       logInStatus: 'signed out',
       errorMessage: 'none',
-      user: null
+      user: null,
+      loading: true
     };
   }
 
@@ -33,7 +35,7 @@ export default class HomeScreen extends React.Component {
     header: null
   };
 
-  componentDidMount() {
+  async  componentDidMount() {
     auth.onAuthStateChanged(user => {
       if (user != null) {
         this.writeUserData(user[`uid`], user[`displayName`], user[`email`], user[`photoURL`])
@@ -42,6 +44,11 @@ export default class HomeScreen extends React.Component {
         this.setState({ logInStatus: 'You are currently logged out.' });
       }
     });
+
+    await Font.loadAsync({
+      'Chicle': require('../node_modules/native-base/Fonts/Chicle-Regular.ttf'),
+    });
+    this.setState({ loading: false });
   }
 
   async handleFacebookButton() {
@@ -49,7 +56,6 @@ export default class HomeScreen extends React.Component {
       permissions: ['public_profile', 'email']
     });
     if (type === 'success') {
-      //Firebase credential is created with the Facebook access token.
       const credential = firebase.auth.FacebookAuthProvider.credential(token);
 
       auth.signInAndRetrieveDataWithCredential(credential).catch(error => {
@@ -74,59 +80,91 @@ export default class HomeScreen extends React.Component {
   }
 
   render() {
-    const { user } = this.state;
-    
-    if (user) {
-      return (
-        <View style={styles.container}>
-        <View style={styles.getStartedContainer}>
-        {this._maybeRenderDevelopmentModeWarning()}
-        <Text style={styles.getStartedText}>Welcome to Doggelganger2.0!!!</Text>
-        <Text>Logged In Status: {this.state.logInStatus}</Text>
-        <Button onPress={() => this.logout()} title='Logout' />
-        </View>
-        </View>
-      );
+    const { user, loading } = this.state;
+    if (loading) {
+      return   <AppLoading />
     } else {
-      return (
-        <View style={styles.container}>
-        <View style={styles.getStartedContainer}>
-        {this._maybeRenderDevelopmentModeWarning()}
-        <Text style={styles.getStartedText}>Welcome to Doggelganger2.0!!!</Text>
+      if (user) {
+        return (
+          <View style={styles.container}>
+          <Card>
+          <Text style={styles.appNameTitle}>Doggelganger<Text style={styles.tm}>®</Text></Text>
+          </Card>
 
-        <TouchableHighlight
-        style={styles.facebookButton}
-        name="Facebook"
-        underlayColor={styles.facebookButton.backgroundColor}
-        onPress={() => this.handleFacebookButton()}
-        >
-        <Text style={styles.facebookButtonText}>Log in with Facebook</Text>
-        </TouchableHighlight>
-        <View style={styles.space} />
-        <Text>Logged In Status: {this.state.logInStatus}</Text>
-        <View style={styles.space} />
-        <Text> Log In Error Messages: {this.state.errorMessage}</Text>
-        </View>
-        </View>
-      );
-    }
+          <Card>
+          <CardItem bordered>
+          <Left>
+          <Thumbnail square source={{uri: user["photoURL"]}} />
+          <Body>
+          <Text style={styles.welcomeText}>Welcome, {user["displayName"]}!</Text>
+          </Body>
+          </Left>
+          </CardItem>
 
-  }
+          <CardItem>
+          <Body>
+          <Text style={styles.appDescription}>
+          Welcome to Doggelganger! Submit your photo to get matched with an available pet from
+          <Text
+          style={styles.petfinderLink}
+          onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
+          ! Our algorithm uses an API to detect which dog and cat breed is the most
+          similar to your submitted image and returns your highest scoring matches
+          from Petfinder. Now that you are logged in, you can save your favorite pet
+          matches for later!
+          </Text>
+          </Body>
+          </CardItem>
+          <CardItem style={{ paddingVertical: 0 }}>
+          <Right>
+          <Button  style={styles.logoutButton} onPress={() => this.logout()}>
+          <Text style={styles.logoutText}>Logout</Text>
+          </Button>
+          </Right>
+          </CardItem>
+          </Card>
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      return (
-        <Text style={styles.developmentModeText}>
-        Development mode is enabled, your app will be slower but you can use useful development
-        tools.
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-        You are not in development mode, your app will run at full speed.
-        </Text>
-      );
+          </View>
+        );
+      } else {
+        return (
+          <View style={styles.container}>
+          <Card>
+          <Text style={styles.appNameTitle}>Doggelganger<Text style={styles.tm}>®</Text></Text>
+          </Card>
+
+          <Card>
+          <CardItem bordered>
+          <Body>
+          <Button  style={styles.logoutButton}
+          onPress={() => this.handleFacebookButton()}
+          >
+          <Text style={styles.logoutText}>Log in with Facebook</Text>
+          </Button>
+          <Text>Logged In Status: {this.state.logInStatus}</Text>
+          <Text> Log In Error Messages: {this.state.errorMessage}</Text>
+          </Body>
+          </CardItem>
+
+          <CardItem>
+          <Body>
+          <Text style={styles.appDescription}>
+          Welcome to Doggelganger! Submit your photo to get matched with an available pet from
+          <Text
+          style={styles.petfinderLink}
+          onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
+          ! Our algorithm uses an API to detect which dog and cat breed is the most
+          similar to your submitted image and returns your highest scoring matches
+          from Petfinder. Once you are logged in, you can save your favorite pet matches for later!
+          </Text>
+          </Body>
+          </CardItem>
+          </Card>
+
+          </View>
+
+        );
+      }
     }
   }
 }
@@ -134,42 +172,44 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: "#4C55FF"
   },
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
     fontSize: 14,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: 'center'
   },
-  contentContainer: {
-    paddingTop: 30,
+  welcomeText: {
+    fontWeight: 'bold',
+    color: "#4C55FF",
+    fontSize: 15
   },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+  logoutText: {
+    color: "white",
+    padding: 5,
+    fontSize: 15
   },
-  getStartedText: {
-    fontSize: 25,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
+  logoutButton: {
+    backgroundColor: "#4C55FF"
   },
-  facebookButton: {
-    width: 375 * 0.75,
-    height: 48,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#3B5998'
+  appNameTitle: {
+    textAlign: "center",
+    color: "#4C55FF",
+    fontFamily: 'Chicle',
+    fontSize: 50,
+    padding: 25
   },
-  facebookButtonText: {
-    color: '#fff'
+  appDescription: {
+    color: "#B29623"
   },
-  space: {
-    height: 17
+  petfinderLink: {
+    textDecorationLine: 'underline',
+    color: "#111AB2"
+  },
+  tm: {
+    fontSize: 20
   }
 });

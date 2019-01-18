@@ -37,6 +37,7 @@ export default class PetMatches extends React.Component {
     await Font.loadAsync({
       'Roboto': require('../node_modules/native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('../node_modules/native-base/Fonts/Roboto_medium.ttf'),
+      'Chicle': require('../node_modules/native-base/Fonts/Chicle-Regular.ttf'),
     });
     this.setState({ loading: false });
   }
@@ -105,7 +106,7 @@ export default class PetMatches extends React.Component {
       <CardItem bordered>
       <Left>
       <Body>
-      <H1>{this.props.pet["name"]}</H1>
+      <H1 style={styles.petName}>{this.props.pet["name"]}</H1>
       <Text note>{this.props.pet["score"]}% match!</Text>
       <Text note>{this.props.pet["breed"]} </Text>
       </Body>
@@ -156,5 +157,10 @@ PetMatches.propTypes = {
 const styles = StyleSheet.create({
   petfinderProfileButton: {
     color: '#4C55FF'
+  },
+  petName: {
+    fontFamily: 'Chicle',
+    color: "#4C55FF"
   }
+
 });

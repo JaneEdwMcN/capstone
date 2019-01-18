@@ -7,26 +7,17 @@ import firebase from 'firebase';
 import getTheme from '../native-base-theme/components';
 import material from '../native-base-theme/variables/material';
 
-const auth = firebase.auth();
 
 export default class FavoritePets extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      user: null,
       loading: true
     };
   }
 
   async  componentDidMount() {
-    auth.onAuthStateChanged(user => {
-      if (user != null) {
-        this.setState({ user: user });
-      } else {
-        this.setState({ user: null });
-      }
-    });
     await Font.loadAsync({
       'Roboto': require('../node_modules/native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('../node_modules/native-base/Fonts/Roboto_medium.ttf'),
@@ -35,7 +26,7 @@ export default class FavoritePets extends React.Component {
   }
 
   removeFavorite = () => {
-    const uid = this.state.user["uid"]
+    const uid = this.props.user["uid"]
     firebase.database().ref('users/' + uid  + `/pets/` +  this.props.petID).remove();
   }
 
@@ -82,7 +73,8 @@ FavoritePets.propTypes = {
   score: PropTypes.string,
   url: PropTypes.string,
   petID: PropTypes.string,
-  photo: PropTypes.string
+  photo: PropTypes.string,
+  user: PropTypes.object
 };
 
 const styles = StyleSheet.create({

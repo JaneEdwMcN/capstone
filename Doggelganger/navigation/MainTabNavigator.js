@@ -1,6 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // 6.2.2
+import { MaterialCommunityIcons } from '@expo/vector-icons'; // 6.2.2
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 
@@ -8,39 +7,18 @@ import HomeScreen from '../screens/HomeScreen';
 import CameraScreen from '../screens/CameraScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 
-import PropTypes from 'prop-types';
-
-class IconWithBadge extends React.Component {
-  render() {
-    const { name, color, size } = this.props;
-    return (
-      <View style={{ width: 24, height: 24, margin: 5 }}>
-      <Ionicons name={name} size={size} color={color} />
-      </View>
-    );
-  }
-}
-
-const HomeIconWithBadge = props => {
-  return <IconWithBadge {...props} />;
-};
-
 const getTabBarIcon = (navigation, focused, tintColor) => {
   const { routeName } = navigation.state;
-  let IconComponent = Ionicons;
+  let IconComponent = MaterialCommunityIcons;
   let iconName;
   if (routeName === 'Home') {
-    iconName = `ios-information-circle${focused ? '' : '-outline'}`;
-    // We want to add badges to home tab icon
-    IconComponent = HomeIconWithBadge;
+    iconName = `paw`;
   } else if (routeName === 'Camera') {
-    iconName = `ios-camera`;
+    iconName = `camera`;
   } else if (routeName === 'Favorites') {
-    iconName = `ios-star`;
+    iconName = `star`;
   }
-
-  // You can return any component that you like here!
-  return <IconComponent name={iconName} size={25} color={tintColor} />;
+  return <IconComponent name={iconName} size={30} color={tintColor} />;
 };
 
 export default createAppContainer(
@@ -60,14 +38,9 @@ export default createAppContainer(
         inactiveTintColor: '#B29623',
         style: {
           backgroundColor: '#FFDB4C',
+          height: 60
         }
       },
     }
   )
 );
-
-IconWithBadge.propTypes = {
-  name: PropTypes.any,
-  color: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired
-};

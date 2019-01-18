@@ -52,7 +52,7 @@ export default class DisplayPetFinderResults extends React.Component {
       const breedUpperCase = capitalLetter(breedLowcase);
 
       const firstHalfURL = `http://api.petfinder.com/pet.find?key=${PETFINDER_API_KEY}`
-      const secondHalfURL = `&count=1&location=98122&breed=${breedUpperCase}&format=json`
+      const secondHalfURL = `&count=1&location=98122&breed=${breedUpperCase}&animal=${this.props.animal}&format=json`
 
       axios.get(firstHalfURL + secondHalfURL)
       .then((response) => {
@@ -114,5 +114,6 @@ export default class DisplayPetFinderResults extends React.Component {
     DisplayPetFinderResults.propTypes = {
       predictions: PropTypes.array.isRequired,
       user: PropTypes.object,
-      navigation: PropTypes.object
+      navigation: PropTypes.object,
+      animal: PropTypes.string.isRequired
     };
