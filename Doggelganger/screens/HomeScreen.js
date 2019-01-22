@@ -95,7 +95,7 @@ export default class HomeScreen extends React.Component {
       if (user) {
         return (
           <View style={styles.container}>
-          <Card>
+          <Card style={styles.appTitleCard}>
           <Text style={styles.appNameTitle}>Doggelganger<Text style={styles.tm}>®</Text></Text>
           </Card>
 
@@ -112,7 +112,8 @@ export default class HomeScreen extends React.Component {
           <CardItem>
           <Body>
           <Text style={styles.appDescription}>
-          Welcome to Doggelganger! Submit your photo to get matched with an available pet from
+          Welcome to <Text style={styles.doggelganger}>Doggelganger</Text>
+          ! Submit your photo to get matched with an available pet from
           <Text
           style={styles.petfinderLink}
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
@@ -140,7 +141,7 @@ export default class HomeScreen extends React.Component {
       } else {
         return (
           <View style={styles.container}>
-          <Card>
+          <Card style={styles.appTitleCard}>
           <Text style={styles.appNameTitle}>Doggelganger<Text style={styles.tm}>®</Text></Text>
           </Card>
 
@@ -159,7 +160,8 @@ export default class HomeScreen extends React.Component {
           <CardItem>
           <Body>
           <Text style={styles.appDescription}>
-          Welcome to Doggelganger! Submit your photo to get matched with an available pet from
+          Welcome to <Text style={styles.doggelganger}>Doggelganger</Text>
+          ! Submit your photo to get matched with an available pet from
           <Text
           style={styles.petfinderLink}
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
@@ -198,7 +200,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontWeight: 'bold',
     color: "#4C55FF",
-    fontSize: 15
+    fontSize: 18
   },
   logoutText: {
     color: "white",
@@ -213,7 +215,14 @@ const styles = StyleSheet.create({
     color: "#4C55FF",
     fontFamily: 'Chicle',
     fontSize: 50,
-    padding: 25
+    padding: 15
+  },
+  doggelganger: {
+    fontFamily: 'Chicle',
+    fontSize: 16
+  },
+  appTitleCard: {
+    marginBottom: 25
   },
   appDescription: {
     color: "#B29623"
@@ -226,7 +235,8 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   appDescriptionLastParagraph: {
-    paddingTop: 5,
-    color: "#4C55FF"
+    paddingTop: 10,
+    color: "#4C55FF",
+    fontSize: 16
   }
 });
