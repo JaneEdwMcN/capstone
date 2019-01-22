@@ -5,7 +5,7 @@ import {  Font, AppLoading, Camera, Permissions, ImageManipulator } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import DisplayPetFinderResults from '../components/DisplayPetFinderResults';
 
-import { CLARIFAI_DOG_API_KEY, CLARIFAI_CAT_API_KEY } from 'react-native-dotenv'
+import { CLARIFAI_PETFINDER_DOG_API_KEY, CLARIFAI_CAT_API_KEY } from 'react-native-dotenv'
 import getTheme from '../native-base-theme/components';
 import material from '../native-base-theme/variables/material';
 import PropTypes from 'prop-types';
@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 const Clarifai = require('clarifai');
 
 const clarifaiDog = new Clarifai.App({
-  apiKey: CLARIFAI_DOG_API_KEY
+  apiKey: CLARIFAI_PETFINDER_DOG_API_KEY
 });
 
 const clarifaiCat = new Clarifai.App({
