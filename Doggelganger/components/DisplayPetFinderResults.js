@@ -3,8 +3,22 @@ import { ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import PetMatches from './PetMatches';
+import { CLARIFAI_PETFINDER_BARNYARD_API_KEY, PETFINDER_API_KEY } from 'react-native-dotenv';
+import { CLARIFAI_PETFINDER_DOG_API_KEY, CLARIFAI_PETFINDER_CAT_API_KEY } from 'react-native-dotenv';
 
-import { PETFINDER_API_KEY } from 'react-native-dotenv'
+const Clarifai = require('clarifai');
+
+const clarifaiDog = new Clarifai.App({
+  apiKey: CLARIFAI_PETFINDER_DOG_API_KEY
+});
+
+const clarifaiCat = new Clarifai.App({
+  apiKey: CLARIFAI_PETFINDER_CAT_API_KEY
+});
+
+const clarifaiBarnyard = new Clarifai.App({
+  apiKey: CLARIFAI_PETFINDER_BARNYARD_API_KEY
+});
 
 const  getScore = (scoreFloat) => {
   let score = ""
@@ -62,42 +76,55 @@ export default class DisplayPetFinderResults extends React.Component {
             photo: response.data["petfinder"]["pet"]["media"]["photos"]["photo"][0]["$t"],
             url: `https://www.petfinder.com/petdetail/${response.data['petfinder']['pet']['id']['$t']}`,
             score: score,
-            petID: response.data['petfinder']['pet']['id']['$t']
+            petID: id
           }
 
           const { pets } = this.state
           pets.push(petInfo)
-          this.setState({pets: pets})}
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-        i++;
+          this.setState({pets: pets})
+        } else {
+          this.deleteAnimalFromClarifai(id);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+      i++;
+    }
+  }
+
+  deleteAnimalFromClarifai = (petID) => {
+    if (this.props.animal === "dog") {
+      clarifaiDog.inputs.delete(petID);
+    } else if (this.props.animal === "cat") {
+      clarifaiCat.inputs.delete(petID);
+    } else if (this.props.animal === "barnyard") {
+      clarifaiBarnyard.inputs.delete(petID);
+    }
+  }
+
+  render() {
+    const petResults = this.state.pets.map((pet, index) => {
+      const photoWithWidth = pet["photo"]
+      const photo = photoWithWidth.replace("&width=60&-pnt.jpg", ".jpg")
+      return(<PetMatches
+        key={index}
+        user={this.props.user}
+        pet={pet}
+        photo={photo}
+        navigation={this.props.navigation}/>)
+      })
+
+      return (<ScrollView horizontal>
+        { petResults }
+        </ScrollView>)
       }
     }
 
-    render() {
-      const petResults = this.state.pets.map((pet, index) => {
-        const photoWithWidth = pet["photo"]
-        const photo = photoWithWidth.replace("&width=60&-pnt.jpg", ".jpg")
-        return(<PetMatches
-          key={index}
-          user={this.props.user}
-          pet={pet}
-          photo={photo}
-          navigation={this.props.navigation}/>)
-        })
 
-        return (<ScrollView horizontal>
-          { petResults }
-          </ScrollView>)
-        }
-      }
-
-
-      DisplayPetFinderResults.propTypes = {
-        predictions: PropTypes.array.isRequired,
-        user: PropTypes.object,
-        navigation: PropTypes.object,
-        animal: PropTypes.string.isRequired
-      };
+    DisplayPetFinderResults.propTypes = {
+      predictions: PropTypes.array.isRequired,
+      user: PropTypes.object,
+      navigation: PropTypes.object,
+      animal: PropTypes.string.isRequired
+    };

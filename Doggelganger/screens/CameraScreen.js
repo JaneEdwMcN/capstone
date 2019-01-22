@@ -4,8 +4,8 @@ import { Button, StyleProvider, H1, Spinner, ActionSheet } from "native-base";
 import {  Font, AppLoading, Camera, Permissions, ImageManipulator } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import DisplayPetFinderResults from '../components/DisplayPetFinderResults';
-
-import { CLARIFAI_PETFINDER_DOG_API_KEY, CLARIFAI_CAT_API_KEY } from 'react-native-dotenv'
+import { CLARIFAI_PETFINDER_BARNYARD_API_KEY } from 'react-native-dotenv';
+import { CLARIFAI_PETFINDER_DOG_API_KEY, CLARIFAI_PETFINDER_CAT_API_KEY } from 'react-native-dotenv';
 import getTheme from '../native-base-theme/components';
 import material from '../native-base-theme/variables/material';
 import PropTypes from 'prop-types';
@@ -17,10 +17,14 @@ const clarifaiDog = new Clarifai.App({
 });
 
 const clarifaiCat = new Clarifai.App({
-  apiKey: CLARIFAI_CAT_API_KEY
+  apiKey: CLARIFAI_PETFINDER_CAT_API_KEY
 });
 
-const BUTTONS = [ "dog", "cat", "Cancel" ];
+const clarifaiBarnyard = new Clarifai.App({
+  apiKey: CLARIFAI_PETFINDER_BARNYARD_API_KEY
+});
+
+const BUTTONS = [ "dog", "cat", "barnyard", "Cancel" ];
 
 export default class CameraScreen extends React.Component {
 
@@ -75,6 +79,8 @@ export default class CameraScreen extends React.Component {
       clarifai = clarifaiDog
     } else if (animal === "cat") {
       clarifai = clarifaiCat
+    } else if (animal === "barnyard") {
+      clarifai = clarifaiBarnyard
     }
     let imageResults = await clarifai.inputs.search({ input: {base64: image} });
     return imageResults["hits"];
@@ -102,6 +108,8 @@ export default class CameraScreen extends React.Component {
       return "Dogs"
     } else if (animal === "cat") {
       return "Cats"
+    } else if (animal === "barnyard") {
+      return "Barnyard Critters"
     }
   }
 
@@ -182,7 +190,7 @@ export default class CameraScreen extends React.Component {
           ActionSheet.show(
             {
               options: BUTTONS,
-              cancelButtonIndex: 2,
+              cancelButtonIndex: 3,
               title: "Choose an animal to match with:"
             },
             buttonIndex => {

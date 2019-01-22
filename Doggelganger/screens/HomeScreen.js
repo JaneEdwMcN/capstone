@@ -116,9 +116,9 @@ export default class HomeScreen extends React.Component {
           <Text
           style={styles.petfinderLink}
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
-          ! Our algorithm uses an API to detect which dog and cat breed is the most
-          similar to your submitted image and returns your highest scoring matches
-          from Petfinder.
+          ! Our algorithm uses an API to detect which dog, cat, or barnyard critter
+          image is the most similar to your submitted image and returns your highest
+          scoring matches from Petfinder.
           </Text>
           <Text style={styles.appDescriptionLastParagraph}>
           Now that you{"'"}re logged in, you can save your favorite pet
@@ -152,7 +152,7 @@ export default class HomeScreen extends React.Component {
           >
           <Text style={styles.logoutText}>Log in with Facebook</Text>
           </Button>
-        {  errorMessage && <Text> Log In Error Messages: </Text> }
+          {  errorMessage && <Text> Log In Error Messages: </Text> }
           </Body>
           </CardItem>
 
@@ -163,9 +163,9 @@ export default class HomeScreen extends React.Component {
           <Text
           style={styles.petfinderLink}
           onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
-          ! Our algorithm uses an API to detect which dog and cat breed is the most
-          similar to your submitted image and returns your highest scoring matches
-          from Petfinder.
+          ! Our algorithm uses an API to detect which dog, cat, or barnyard critter
+          image is the most similar to your submitted image and returns your highest
+          scoring matches from Petfinder.
           </Text>
           <Text style={styles.appDescriptionLastParagraph}>
           Once you{"'"}re logged in, you can save your favorite pet matches for later!
