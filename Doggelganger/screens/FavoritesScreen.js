@@ -112,7 +112,7 @@ export default class FavoritesScreen extends React.Component {
         title="Go to Login Page"
         onPress={() => this.props.navigation.navigate('Home')}
         >
-        <Text style={styles.goToLogin}>Please login to see your favorite pets!</Text>
+        <Text style={styles.goToLogin}>Please log in to see your favorite pets!</Text>
         </Button>
         </Body>
       }

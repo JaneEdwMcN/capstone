@@ -90,7 +90,7 @@ export default class PetMatches extends React.Component {
       title="Go to Login Page"
       onPress={() => this.props.navigation.navigate('Home')}
       >
-      <Text> Login to save your favorites!</Text>
+      <Text> Log in to save your favorites!</Text>
       </Button>
     }
   }

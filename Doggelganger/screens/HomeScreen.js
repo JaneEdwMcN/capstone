@@ -113,10 +113,10 @@ export default class HomeScreen extends React.Component {
           <Body>
           <Text style={styles.appDescription}>
           Welcome to <Text style={styles.doggelganger}>Doggelganger</Text>
-          ! Submit your photo to get matched with an available pet from
+          ! Submit your photo to get matched with an available pet from{' '}
           <Text
           style={styles.petfinderLink}
-          onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
+          onPress={()=>Linking.openURL('https://www.petfinder.com/')}>Petfinder.com</Text>
           ! Our algorithm uses an API to detect which dog, cat, or barnyard critter
           image is the most similar to your submitted image and returns your highest
           scoring matches from Petfinder.
@@ -130,7 +130,7 @@ export default class HomeScreen extends React.Component {
           <CardItem style={{ paddingVertical: 0 }}>
           <Right>
           <Button  style={styles.logoutButton} onPress={() => this.logout()}>
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Log Out from Facebook</Text>
           </Button>
           </Right>
           </CardItem>
@@ -161,10 +161,10 @@ export default class HomeScreen extends React.Component {
           <Body>
           <Text style={styles.appDescription}>
           Welcome to <Text style={styles.doggelganger}>Doggelganger</Text>
-          ! Submit your photo to get matched with an available pet from
+          ! Submit your photo to get matched with an available pet from{' '}
           <Text
           style={styles.petfinderLink}
-          onPress={()=>Linking.openURL('https://www.petfinder.com/')}> Petfinder.com</Text>
+          onPress={()=>Linking.openURL('https://www.petfinder.com/')}>Petfinder.com</Text>
           ! Our algorithm uses an API to detect which dog, cat, or barnyard critter
           image is the most similar to your submitted image and returns your highest
           scoring matches from Petfinder.
@@ -205,6 +205,8 @@ const styles = StyleSheet.create({
   logoutText: {
     color: "white",
     padding: 5,
+    paddingRight: 10,
+    paddingLeft: 10,
     fontSize: 15
   },
   logoutButton: {
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     color: "#4C55FF",
     fontFamily: 'Chicle',
     fontSize: 50,
-    padding: 15
+    padding: 10
   },
   doggelganger: {
     fontFamily: 'Chicle',
