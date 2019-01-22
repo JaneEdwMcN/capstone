@@ -41,7 +41,6 @@ export default class DisplayPetFinderResults extends React.Component {
       axios.get(URL)
       .then((response) => {
         if (response.data["petfinder"]["header"]["status"]["code"]["$t"] === "100") {
-          console.log(response.data["petfinder"]["pet"]);
           const breedFromData = response.data["petfinder"]["pet"]["breeds"]["breed"]
           let breed = ""
           if (breedFromData["$t"]) {
@@ -79,10 +78,13 @@ export default class DisplayPetFinderResults extends React.Component {
 
     render() {
       const petResults = this.state.pets.map((pet, index) => {
+        const photoWithWidth = pet["photo"]
+        const photo = photoWithWidth.replace("&width=60&-pnt.jpg", ".jpg")
         return(<PetMatches
           key={index}
           user={this.props.user}
           pet={pet}
+          photo={photo}
           navigation={this.props.navigation}/>)
         })
 

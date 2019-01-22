@@ -60,7 +60,7 @@ export default class PetMatches extends React.Component {
       score:  this.props.pet["score"],
       name: this.props.pet["name"],
       breed: this.props.pet["breed"],
-      photo: this.props.pet["photo"],
+      photo: this.props.photo,
       url: this.props.pet["url"],
       petID: this.props.pet["petID"]
     });
@@ -123,7 +123,7 @@ export default class PetMatches extends React.Component {
         width: deviceWidth / 1.18,
         marginVertical: 5
       }}
-      source={{uri: this.props.pet["photo"]}}
+      source={{uri: this.props.photo}}
       />
       <Button>
       <Text
@@ -150,6 +150,7 @@ export default class PetMatches extends React.Component {
 PetMatches.propTypes = {
   user: PropTypes.object,
   pet: PropTypes.object,
+  photo: PropTypes.string,
   navigation: PropTypes.object
 };
 
