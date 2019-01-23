@@ -32,7 +32,23 @@ const  getScore = (scoreFloat) => {
     score = scoreStr.replace("0.", "")
   }
   return score
+}
 
+const  parseBreed = (breedFromData) => {
+  let breed = ""
+  if (breedFromData["$t"]) {
+    breed = breedFromData["$t"]
+  } else {
+    breedFromData.forEach(function(thisBreed, index){
+      const last = breedFromData.length - 1
+      if (index === last) {
+        breed += thisBreed["$t"]
+      } else {
+        breed += thisBreed["$t"] + "/"
+      }
+    });
+  }
+  return breed
 }
 
 export default class DisplayPetFinderResults extends React.Component {
@@ -56,19 +72,7 @@ export default class DisplayPetFinderResults extends React.Component {
       .then((response) => {
         if (response.data["petfinder"]["header"]["status"]["code"]["$t"] === "100") {
           const breedFromData = response.data["petfinder"]["pet"]["breeds"]["breed"]
-          let breed = ""
-          if (breedFromData["$t"]) {
-            breed = breedFromData["$t"]
-          } else {
-            breedFromData.forEach(function(thisBreed, index){
-              const last = breedFromData.length - 1
-              if (index === last) {
-                breed += thisBreed["$t"]
-              } else {
-                breed += thisBreed["$t"] + "/"
-              }
-            });
-          }
+          const breed = parseBreed(breedFromData);
 
           const petInfo = {
             name: response.data["petfinder"]["pet"]["name"]["$t"],
