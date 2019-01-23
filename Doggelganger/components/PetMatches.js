@@ -129,7 +129,7 @@ export default class PetMatches extends React.Component {
       <Text
       style={styles.petfinderProfileButton}
       onPress={()=>Linking.openURL(this.props.pet['url'])}>
-      Visit Pefinder Profile
+      Visit Petfinder Profile
       </Text>
       </Button>
 
