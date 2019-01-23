@@ -79,14 +79,6 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  findAdaImage = (userPhoto) => {
-    if (userPhoto === "https://graph.facebook.com/102501004190729/picture") {
-      return "https://i.imgur.com/xVKPGKl.png"
-    } else {
-      return userPhoto
-    }
-  }
-
   render() {
     const { user, loading, errorMessage } = this.state;
     if (loading) {
@@ -102,7 +94,7 @@ export default class HomeScreen extends React.Component {
           <Card>
           <CardItem bordered>
           <Left>
-          <Thumbnail square source={{uri: this.findAdaImage(user["photoURL"])}} />
+          <Thumbnail square source={{uri: user["photoURL"]}} />
           <Body>
           <Text style={styles.welcomeText}>Hello, {user["displayName"]}!</Text>
           </Body>
@@ -124,6 +116,27 @@ export default class HomeScreen extends React.Component {
           <Text style={styles.appDescriptionLastParagraph}>
           Now that you{"'"}re logged in, you can save your favorite pet
           matches for later!
+          </Text>
+          <Text style={styles.flaticonCredit}>
+          Launch Icon made by{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("https://www.freepik.com/")}>
+          Freepik
+          </Text>
+          {' '}from{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("www.flaticon.com")}>
+          www.flaticon.com{' '}
+          </Text>
+          is licensed by{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("http://creativecommons.org/licenses/by/3.0/")}
+          >
+          CC 3.0 BY
+          </Text>
           </Text>
           </Body>
           </CardItem>
@@ -171,6 +184,28 @@ export default class HomeScreen extends React.Component {
           </Text>
           <Text style={styles.appDescriptionLastParagraph}>
           Once you{"'"}re logged in, you can save your favorite pet matches for later!
+          </Text>
+
+          <Text style={styles.flaticonCredit}>
+          Launch Icon made by{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("https://www.freepik.com/")}>
+          Freepik
+          </Text>
+          {' '}from{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("www.flaticon.com")}>
+          www.flaticon.com{' '}
+          </Text>
+          is licensed by{' '}
+          <Text
+          style={styles.flaticonCreditLink}
+          onPress={()=>Linking.openURL("http://creativecommons.org/licenses/by/3.0/")}
+          >
+          CC 3.0 BY
+          </Text>
           </Text>
           </Body>
           </CardItem>
@@ -240,5 +275,14 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     color: "#4C55FF",
     fontSize: 16
+  },
+  flaticonCredit: {
+    paddingTop: 10,
+    fontSize: 8,
+    color: "#4C55FF"
+  },
+  flaticonCreditLink: {
+    color: "#B29623",
+    textDecorationLine: 'underline'
   }
 });
